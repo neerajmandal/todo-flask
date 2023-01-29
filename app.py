@@ -1,49 +1,90 @@
-from todo import Todo
-import uuid
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, url_for, request, redirect
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+db = SQLAlchemy(app)
 
-todo_list = []
-progress_list = []
-done_list = []
+class Todo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(200), nullable=False)
+    status = db.Column(db.String(200), default='')
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
-@app.route('/')
+    def __repr__(self):
+        return '<Task %r>' % self.id
+
+
+@app.route('/', methods=['POST', 'GET'])
 def index():
-    return render_template('index.html', todo_list=todo_list, progress_list=progress_list, done_list=done_list)
+    if request.method == 'POST':
+        task_content = request.form['content']
+        new_task = Todo(content=task_content)
 
-@app.route('/add', methods=['POST'])
-def add():
+        try:
+            db.session.add(new_task)
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue adding your task'
 
-    item = request.form['item']
-    todoType = request.form['todoType']
-    id = uuid.uuid1()
+    else:
+        tasks = Todo.query.order_by(Todo.date_created).all()
+        return render_template('index.html', tasks=tasks)
 
-    todo = Todo(id, item, todoType)
+@app.route('/delete/<int:id>')
+def delete(id):
+    task_to_delete = Todo.query.get_or_404(id)
 
-    todo_list.append(todo)
-    return redirect('/')
+    try:
+        db.session.delete(task_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'Issue delete the task'
 
-@app.route('/move/<id>')
-def move(id):
-    todo = searchList(id, todo_list)
-    todo_list.remove(todo)
-    progress_list.append(todo)
-    return redirect('/')
 
-@app.route('/move1/<id>')
-def move1(id):
-    todo = searchList(id, progress_list)
-    progress_list.remove(todo)
-    done_list.append(todo)
-    return redirect('/')
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+    task = Todo.query.get_or_404(id)
 
-def searchList(id, taskList):
+    if request.method == 'POST':
+        task.content = request.form['content']
 
-    for task in taskList:
-        if task.id == id:
-            break
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue updating your task'
 
-    return task
+    else:
+        return render_template('update.html', task=task)
+
+@app.route('/progress/<int:id>')
+def progress(id):
+    task = Todo.query.get_or_404(id)
+    task.status = 'In Progress'
+    try:
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'Issue updating the task'
+
+@app.route('/done/<int:id>')
+def done(id):
+    task = Todo.query.get_or_404(id)
+    task.status = 'Done'
+    try:
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'Issue updating the task'
+
+@app.route('/status', methods=['GET'])
+def status():
+    tasks = Todo.query.order_by(Todo.date_created).all()
+    return render_template('status.html', tasks=tasks)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Task Master - Status</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center;">Task Master - Status</h1>
+    <table>
+        <tr>
+            <th>Tasks</th>
+            <th>In Progress</th>
+            <th>Done</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+                {% if task.status == '' %}
+                    <td>{{ task.content }}</td>
+                {% elif task.status == 'In Progress' %}
+                    <td>{{ task.content }}</td>
+                {% elif task.status == 'Done' %}
+                    <td>{{ task.content }}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
