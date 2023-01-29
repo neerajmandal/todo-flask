@@ -38,17 +38,17 @@
     <div style="display: flex; justify-content: space-between;">    
         <ul style="margin-left: 40px;">
           {% for todo in todo_list %}
-              <li>{{ todo.item + " " + todo.todoType }} <a href="{{ url_for('move', item=todo.item) }}">(In-Progress)</a></li>
+              <li>{{ todo.task + "\n" + todo.todoType }} <a href="{{ url_for('move', id=todo.id) }}">(In-Progress)</a></li>
           {% endfor %}
         </ul>
         <ul>
-          {% for item in progress_list %}
-              <li>{{item}} <a href="{{ url_for('move1', item=item) }}">(done)</a></li>
+          {% for todo in progress_list %}
+              <li>{{ todo.task + "\n" + todo.todoType }} <a href="{{ url_for('move1', id=todo.id) }}">(done)</a></li>
           {% endfor %}
         </ul>
         <ul style="margin-right: 100px;">
-          {% for item in done_list %}
-              <li>{{ item }}</li>
+          {% for todo in done_list %}
+              <li>{{ todo.task + "\n" + todo.todoType }}</li>
           {% endfor %}
         </ul>
     </div>
