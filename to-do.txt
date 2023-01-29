@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <style>
+      h2 {
+        display: inline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>To-Do List</h1>
+    <form action="{{ url_for('add') }}" method="POST">
+      <input type="text" name="item">
+      <input type="submit" value="Add">
+    </form>
+
+
+    <div style="display: flex; justify-content: space-between;">
+        <h3 style="margin-left: 40px;">To-Do</h3>
+        <h3>In-Progress</h3>
+        <h3 style="margin-right: 100px;">Done</h3>
+    </div>
+
+    <div style="display: flex; justify-content: space-between;">    
+        <ul style="margin-left: 40px;">
+        {% for item in todo_list %}
+            <li>{{ item }} <a href="{{ url_for('move', item=item) }}">(In-Progress)</a></li>
+        {% endfor %}
+        </ul>
+        <ul>
+            {% for item in progress_list %}
+                <li>{{ item }} <a href="{{ url_for('move1', item=item) }}">(done)</a></li>
+            {% endfor %}
+            </ul>
+        <ul style="margin-right: 100px;">
+        {% for item in done_list %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+  </body>
+</html>
