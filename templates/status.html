@@ -17,9 +17,15 @@
             <tr>
                 {% if task.status == '' %}
                     <td>{{ task.content }}</td>
+                    <td></td>
+                    <td></td>
                 {% elif task.status == 'In Progress' %}
+                    <td></td>
                     <td>{{ task.content }}</td>
+                    <td></td>
                 {% elif task.status == 'Done' %}
+                    <td></td>
+                    <td></td>
                     <td>{{ task.content }}</td>
                 {% endif %}
             </tr>
